@@ -1,12 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 
-from graph.neo4j_db import test_connection, get_products_by_category, get_all_products
+# ✅ FIXED IMPORT (NO "graph" folder)
+from neo4j_db import (
+    test_connection,
+    get_products_by_category,
+    get_all_products
+)
 
 app = FastAPI()
 
+# Allow frontend (important for Render + browser)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,36 +19,41 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 👉 Serve frontend (IMPORTANT)
-app.mount("/static", StaticFiles(directory="frontend"), name="frontend")
-
-
+# ---------------- HOME ----------------
 @app.get("/")
 def home():
-    return FileResponse("frontend/index.html")
+    return {"message": "Server working 🚀"}
 
-
+# ---------------- TEST DB ----------------
 @app.get("/test-db")
 def test_db():
-    return test_connection()
+    try:
+        return {"status": test_connection()}
+    except Exception as e:
+        return {"error": str(e)}
 
-
+# ---------------- ALL PRODUCTS ----------------
 @app.get("/products")
 def products():
-    return {"data": get_all_products()}
+    try:
+        return {"data": get_all_products()}
+    except Exception as e:
+        return {"error": str(e)}
 
-
+# ---------------- CHAT / SEARCH ----------------
 @app.get("/chat")
 def chat(query: str):
     query = query.lower()
 
     category_map = {
-        "mobile": ["mobile", "phone"],
-        "laptop": ["laptop"],
+        "mobile": ["mobile", "phone", "iphone"],
+        "laptop": ["laptop", "dell", "hp"],
         "shoes": ["shoes"],
-        "watch": ["watch"]
+        "watch": ["watch"],
+        "accessories": ["headphones", "earbuds"]
     }
 
+    # category detection
     for cat, words in category_map.items():
         if any(w in query for w in words):
             return {
@@ -52,7 +61,8 @@ def chat(query: str):
                 "data": get_products_by_category(cat)
             }
 
+    # fallback
     return {
-        "answer": "showing products",
+        "answer": "showing all products",
         "data": get_all_products()
     }
