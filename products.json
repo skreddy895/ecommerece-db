@@ -1,0 +1,12 @@
+[
+  {
+    "name": "iPhone 14",
+    "category": "mobile",
+    "price": 70000
+  },
+  {
+    "name": "Samsung S23",
+    "category": "mobile",
+    "price": 65000
+  }
+]
