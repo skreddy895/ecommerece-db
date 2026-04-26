@@ -1,0 +1,17 @@
+[
+  {
+    "name": "iPhone 14",
+    "category": "mobile",
+    "price": 70000
+  },
+  {
+    "name": "Dell Laptop",
+    "category": "laptop",
+    "price": 55000
+  },
+  {
+    "name": "Boat Headphones",
+    "category": "accessories",
+    "price": 2000
+  }
+]

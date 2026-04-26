@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>4R</title>
+
+<style>
+body { margin:0; font-family: Arial; background:#f1f3f6; }
+
+.header {
+    background:#131921;
+    padding:15px;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+}
+
+.logo { color:#ff9900; font-size:20px; }
+
+.search-box { width:50%; display:flex; }
+
+.search-box input { width:100%; padding:10px; }
+
+.search-box button {
+    padding:10px;
+    background:#ff9900;
+    border:none;
+}
+
+.products {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    padding:20px;
+}
+
+.card {
+    background:white;
+    padding:10px;
+    border-radius:8px;
+    text-align:center;
+}
+
+.card img {
+    width:100%;
+    height:150px;
+    object-fit:contain;
+}
+
+.price { color:green; }
+
+.btn {
+    background:#ffd814;
+    padding:8px;
+    border:none;
+    width:100%;
+    margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">4R Store</div>
+
+    <div class="search-box">
+        <input id="query">
+        <button onclick="search()">Search</button>
+    </div>
+
+    <div>🛒 <span id="cart">0</span></div>
+</div>
+
+<div id="products" class="products"></div>
+
+<script>
+
+let cart = 0;
+
+window.onload = async () => {
+    let res = await fetch("http://127.0.0.1:8000/products");
+    let data = await res.json();
+    show(data.data);
+};
+
+function search(){
+    let q = document.getElementById("query").value;
+    fetchData(q);
+}
+
+async function fetchData(q){
+    let res = await fetch("http://127.0.0.1:8000/chat?query=" + q);
+    let data = await res.json();
+    show(data.data);
+}
+
+function show(products){
+    let html = "";
+    products.forEach(p => {
+        html += `
+        <div class="card">
+            <img src="${p.image}">
+            <h3>${p.name}</h3>
+            <p class="price">₹${p.price}</p>
+            <button class="btn" onclick="add()">Add to Cart</button>
+        </div>`;
+    });
+    document.getElementById("products").innerHTML = html;
+}
+
+function add(){
+    cart++;
+    document.getElementById("cart").innerText = cart;
+}
+
+</script>
+
+</body>
+</html>
